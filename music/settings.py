@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'song',
-    'albums'
+    'albums',
+    'song_comment',
+    'album_comment',
 ]
 
 MIDDLEWARE = [
