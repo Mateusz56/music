@@ -26,7 +26,7 @@ SECRET_KEY = '-5h*!svr0m6fkn%04d_)qfk=u$=8g2ct))^0j*jtz=n(_=k6kp'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+APPEND_SLASH=False
 
 # Application definition
 
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 
     'song',
     'albums',
