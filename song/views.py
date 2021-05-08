@@ -6,8 +6,9 @@ from song.serializer import SongSerializer
 from song.models import Song
 from rest_framework import permissions
 
+
 class SongList(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, format=None):
         songs = Song.objects.all()

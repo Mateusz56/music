@@ -8,7 +8,7 @@ from rest_framework import permissions
 
 
 class AlbumList(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, format=None):
         album = Album.objects.all()
