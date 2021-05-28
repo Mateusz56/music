@@ -5,7 +5,8 @@ from rest_framework import status
 from song.serializer import SongSerializer
 from song.models import Song
 from rest_framework import permissions
-
+from django.db.models import Q
+from datetime import datetime
 
 class SongList(APIView):
     permission_classes = [permissions.AllowAny]
@@ -13,13 +14,15 @@ class SongList(APIView):
     def get(self, request, format=None):
         songs = Song.objects.all()
         if 'name' in request.query_params:
-            songs = Song.objects.filter(title__contains=request.query_params.get('name'))
+            songs = Song.objects.filter(Q(title__contains=request.query_params.get('name')) | Q(performer__contains=request.query_params.get('name')))
         if 'genres' in request.query_params:
             songs = songs.filter(genre__in=request.query_params.get('genres').split(','))
-        # if 'yearSince' in request.query_params:
-        #     songs = songs.filter(year__)
+        if 'yearSince' in request.query_params:
+            songs = songs.filter(year__gte=request.query_params.get('yearSince'))
+        if 'yearTo' in request.query_params:
+            songs = songs.filter(year__lte=request.query_params.get('yearTo'))
         if 'offset' in request.query_params:
-            offset = request.query_params.get('offset')
+            offset = int(request.query_params.get('offset'))
         else:
             offset = 0
         songs = songs[offset: offset + 20]

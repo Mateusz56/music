@@ -1,7 +1,6 @@
 from django.db import models
 
 
-
 class Song(models.Model):
 
     class Genres(models.TextChoices):
@@ -13,5 +12,5 @@ class Song(models.Model):
 
     title = models.CharField(max_length=120, null=False)
     performer = models.CharField(max_length=120, default="Unknown")
-    year = models.DateField()
+    year = models.PositiveSmallIntegerField(default=2000, blank=True, null=True)
     genre = models.CharField(max_length=20, choices=Genres.choices, default=Genres.OTHER)
