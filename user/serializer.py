@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        return get_user_model().objects.create(validated_data)
+        return get_user_model().objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):
         instance.username = validated_data.get('username', instance.username)

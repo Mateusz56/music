@@ -12,6 +12,19 @@ class SongList(APIView):
 
     def get(self, request, format=None):
         songs = Song.objects.all()
+        if 'name' in request.query_params:
+            songs = Song.objects.filter(title__contains=request.query_params.get('name'))
+        if 'genres' in request.query_params:
+            songs = songs.filter(genre__in=request.query_params.get('genres').split(','))
+        # if 'yearSince' in request.query_params:
+        #     songs = songs.filter(year__)
+        if 'offset' in request.query_params:
+            offset = request.query_params.get('offset')
+        else:
+            offset = 0
+        songs = songs[offset: offset + 20]
+
+        print(songs.query)
         serializer = SongSerializer(songs, many=True)
         return Response(serializer.data)
 
@@ -49,3 +62,23 @@ class SongDetail(APIView):
         song = self.get_object(pk)
         song.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class GenresList(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, format=None):
+        data = Song.Genres.labels
+        return Response(data)
+# import requests
+# word_site = "https://www.mit.edu/~ecprice/wordlist.10000"
+# response = requests.get(word_site)
+# WORDS = response.content.splitlines()
+#
+# from song.models import Song
+# import random
+# for i in range(0, 100):
+#     performer = random.choice(WORDS)
+#     for j in range(0, 20):
+#         s = Song(title = random.choice(WORDS), performer=performer, year=datetime.now(), genre = random.choice(Song.Genres.choices))
+#         s.save()

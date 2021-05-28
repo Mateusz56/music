@@ -5,6 +5,7 @@ from song import views
 urlpatterns = [
     path('song/', views.SongList.as_view()),
     path('song/<int:pk>/', views.SongDetail.as_view()),
+    path('genres/', views.GenresList.as_view())
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

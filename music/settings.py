@@ -14,7 +14,7 @@ SECRET_KEY = '-5h*!svr0m6fkn%04d_)qfk=u$=8g2ct))^0j*jtz=n(_=k6kp'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-APPEND_SLASH=False
+APPEND_SLASH = True
 
 # Application definition
 
@@ -38,7 +38,8 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-    ]
+    ],
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
 
 MIDDLEWARE = [
@@ -83,13 +84,17 @@ WSGI_APPLICATION = 'music.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'musicdb',
-        'USER': 'postgres',
-        'PASSWORD': 'adminadmin',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'musicdb',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'adminadmin',
+    #     'HOST': '127.0.0.1',
+    #     'PORT': '5432',
+    # }
 }
 
 
