@@ -1,26 +1,41 @@
+from django.db.models import F
+from django.forms import model_to_dict
 from django.http import Http404
+from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+from song.models import Song
 from song_comment.serializer import SongCommentSerializer
 from song_comment.models import SongComment
 from rest_framework import permissions
-
+from django.contrib.auth import get_user_model
+import json
 
 class SongCommentList(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, format=None):
         song_comment = SongComment.objects.all()
-        serializer = SongCommentSerializer(song_comment, many=True)
-        return Response(serializer.data)
+        if 'songId' in request.query_params:
+            song_comment = SongComment.objects.filter(song=request.query_params.get('songId'))
+        if 'offset' in request.query_params:
+            offset = int(request.query_params.get('offset'))
+        else:
+            offset = 0
+        song_comment = song_comment.select_related('author').annotate(username=F('author__username'))
+        song_comment = song_comment[offset * 20: offset * 20 + 20]
+        # serializer = SongCommentSerializer(song_comment, many=True)
+        return Response(song_comment.values())
 
     def post(self, request, format=None):
-        serializer = SongCommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        body = json.loads(request.body)
+        print(body)
+        author = Token.objects.get(key=body['token']).user_id
+        song_comment = SongComment(author_id=author, song_id=body['song'], content=body['content'])
+        song_comment.save()
+        return Response(model_to_dict(song_comment), status=status.HTTP_201_CREATED)
 
 
 class SongCommentDetail(APIView):
