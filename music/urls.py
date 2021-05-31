@@ -22,6 +22,8 @@ urlpatterns = [
     path('', include('song.urls')),
     path('', include('album_comment.urls')),
     path('', include('albums.urls')),
+    path('', include('song_comment.urls')),
+    path('', include('song_mark.urls')),
     path('api-token-auth/', views.obtain_auth_token),
     path('user/', UserPost.as_view()),
     path('user/<int:pk>/', UserDetail.as_view()),
