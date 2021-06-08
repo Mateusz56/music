@@ -11,7 +11,11 @@ class AlbumList(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, format=None):
-        album = Album.objects.all()
+        if 'page' in request.query_params:
+            offset = 20 * int(request.query_params.get('page'))
+        else:
+            offset = 0
+        album = Album.objects.all()[offset: offset + 20]
         serializer = AlbumSerializer(album, many=True)
         return Response(serializer.data)
 

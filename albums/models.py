@@ -11,5 +11,5 @@ class Album(models.Model):
 
 class AlbumsSong(models.Model):
     album = models.ForeignKey(Album, on_delete=models.CASCADE, null=True)
-    song = models.ForeignKey(Song, on_delete=models.CASCADE, null=True)
-    add_date = models.DateField()
+    song = models.ForeignKey(Song, on_delete=models.CASCADE, null=True, related_name='tracks')
+    add_date = models.DateField(auto_now_add=True, blank=True)

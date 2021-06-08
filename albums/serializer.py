@@ -1,11 +1,28 @@
+from django.db.models import Avg
 from rest_framework import serializers
 from albums.models import Album, AlbumsSong
+from song.serializer import SongSerializer
 
 
 class AlbumSerializer(serializers.ModelSerializer):
+    songs_count = serializers.SerializerMethodField(read_only=True)
+    comments = serializers.StringRelatedField(many=True)
+    comments_count = serializers.SerializerMethodField(read_only=True)
+    album_marks = serializers.StringRelatedField(many=True)
+    marks_avg = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Album
-        fields = ['name', 'songs', 'owners']
+        fields = ['name', 'songs_count', 'comments_count', 'comments', 'album_marks', 'marks_avg']
+
+    def get_songs_count(self, obj):
+        return obj.songs.count()
+
+    def get_comments_count(self, obj):
+        return obj.comments.count()
+
+    def get_marks_avg(self, obj):
+        return obj.album_marks.aggregate(Avg('mark'))['mark__avg']
 
     def create(self, validated_data):
         return Album.objects.create(validated_data)
