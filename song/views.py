@@ -27,7 +27,6 @@ class SongList(APIView):
             offset = 0
         songs = songs[offset: offset + 20]
 
-        print(songs.query)
         serializer = SongSerializer(songs, many=True)
         return Response(serializer.data)
 

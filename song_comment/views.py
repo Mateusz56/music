@@ -26,12 +26,10 @@ class SongCommentList(APIView):
             offset = 0
         song_comment = song_comment.select_related('author').annotate(username=F('author__username'))
         song_comment = song_comment[offset * 20: offset * 20 + 20]
-        # serializer = SongCommentSerializer(song_comment, many=True)
         return Response(song_comment.values())
 
     def post(self, request, format=None):
         body = json.loads(request.body)
-        print(body)
         author = Token.objects.get(key=body['token']).user_id
         song_comment = SongComment(author_id=author, song_id=body['song'], content=body['content'])
         song_comment.save()

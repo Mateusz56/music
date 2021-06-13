@@ -18,7 +18,6 @@ class AlbumMarkView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, format=None):
-        print(request.query_params)
         album_mark = AlbumMark.objects.all()
         if 'targetId' in request.query_params:
             album_mark = album_mark.filter(album_id=request.query_params.get('targetId'))
