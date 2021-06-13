@@ -2,17 +2,21 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+from albums.models import Album
 from song.serializer import SongSerializer
 from song.models import Song
 from rest_framework import permissions
 from django.db.models import Q
-from datetime import datetime
+
 
 class SongList(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, format=None):
         songs = Song.objects.all()
+        if 'albumId' in request.query_params:
+            songs = Album.objects.get(id=request.query_params.get('albumId')).songs.all()
         if 'name' in request.query_params:
             songs = Song.objects.filter(Q(title__contains=request.query_params.get('name')) | Q(performer__contains=request.query_params.get('name')))
         if 'genres' in request.query_params:
@@ -72,15 +76,3 @@ class GenresList(APIView):
     def get(self, request, format=None):
         data = Song.Genres.labels
         return Response(data)
-# import requests
-# word_site = "https://www.mit.edu/~ecprice/wordlist.10000"
-# response = requests.get(word_site)
-# WORDS = response.content.splitlines()
-#
-# from song.models import Song
-# import random
-# for i in range(0, 100):
-#     performer = random.choice(WORDS)
-#     for j in range(0, 20):
-#         s = Song(title = random.choice(WORDS), performer=performer, year=datetime.now(), genre = random.choice(Song.Genres.choices))
-#         s.save()
