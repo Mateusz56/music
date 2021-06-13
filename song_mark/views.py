@@ -20,10 +20,11 @@ class SongMarkView(APIView):
 
     def get(self, request, format=None):
         song_mark = SongMark.objects.all()
-        if 'songId' in request.query_params:
-            song_mark = song_mark.filter(song_id=request.query_params.get('songId'))
+        if 'targetId' in request.query_params:
+            song_mark = song_mark.filter(song_id=request.query_params.get('targetId'))
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         song_mark = song_mark.aggregate(avg=Avg('mark'))
-        print(song_mark)
         return Response(song_mark)
 
     def post(self, request, format=None):
@@ -38,11 +39,11 @@ class SongMarkDetail(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, format=None):
-        if 'token' in request.query_params and 'songId' in request.query_params:
+        if 'token' in request.query_params and 'targetId' in request.query_params:
             song_mark = SongMark.objects.all()
             author = Token.objects.get(key=request.query_params.get('token'))
             song_mark = song_mark.filter(author=author.user_id)
-            song_mark = song_mark.get(song=request.query_params.get('songId'))
+            song_mark = song_mark.get(song=request.query_params.get('targetId'))
             return Response(model_to_dict(song_mark), status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -58,5 +59,4 @@ class SongMarkDetail(APIView):
             return Response(song_mark, status=status.HTTP_201_CREATED)
         else:
             song_mark.update(mark=body['mark'])
-            print(song_mark)
             return Response(model_to_dict(song_mark[0]), status=status.HTTP_200_OK)
