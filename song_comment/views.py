@@ -5,12 +5,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
-from song.models import Song
 from song_comment.serializer import SongCommentSerializer
 from song_comment.models import SongComment
 from rest_framework import permissions
-from django.contrib.auth import get_user_model
 import json
 
 class SongCommentList(APIView):
