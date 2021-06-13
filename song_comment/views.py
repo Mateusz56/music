@@ -18,8 +18,8 @@ class SongCommentList(APIView):
 
     def get(self, request, format=None):
         song_comment = SongComment.objects.all()
-        if 'songId' in request.query_params:
-            song_comment = SongComment.objects.filter(song=request.query_params.get('songId'))
+        if 'targetId' in request.query_params:
+            song_comment = SongComment.objects.filter(song=request.query_params.get('targetId'))
         if 'offset' in request.query_params:
             offset = int(request.query_params.get('offset'))
         else:
