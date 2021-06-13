@@ -2,7 +2,7 @@ from rest_framework import serializers
 from album_mark.models import AlbumMark
 
 
-class SongMarkSerializer(serializers.ModelSerializer):
+class AlbumMarkSerializer(serializers.ModelSerializer):
     class Meta:
         model = AlbumMark
         fields = '__all__'
