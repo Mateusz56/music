@@ -4,20 +4,16 @@ from song.models import Song
 
 
 class SongSerializer(serializers.ModelSerializer):
-    comments = serializers.StringRelatedField(many=True)
     comments_count = serializers.SerializerMethodField(read_only=True)
-    song_marks = serializers.StringRelatedField(many=True)
-    marks_avg = serializers.SerializerMethodField(read_only=True)
+    marks_avg = serializers.FloatField(read_only=True)
+    favourite = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Song
-        fields = ['title', 'performer', 'year', 'genre', 'comments_count', 'comments', 'song_marks', 'marks_avg']
+        fields = ['id', 'title', 'performer', 'year', 'genre', 'comments_count', 'marks_avg', 'favourite']
 
     def get_comments_count(self, obj):
         return obj.comments.count()
-
-    def get_marks_avg(self, obj):
-        return obj.song_marks.aggregate(Avg('mark'))['mark__avg']
 
     def create(self, validated_data):
         return Song.objects.create(validated_data)

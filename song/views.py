@@ -1,13 +1,16 @@
+from django.db.models.expressions import RawSQL
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 from albums.models import Album
+from favourite_song.models import FavouriteSong
 from song.serializer import SongSerializer
 from song.models import Song
 from rest_framework import permissions
-from django.db.models import Q
+from django.db.models import Q, F, Subquery, Avg
+import json
 
 
 class SongList(APIView):
@@ -15,6 +18,7 @@ class SongList(APIView):
 
     def get(self, request, format=None):
         songs = Song.objects.all()
+
         if 'albumId' in request.query_params:
             songs = Album.objects.get(id=request.query_params.get('albumId')).songs.all()
         if 'name' in request.query_params:
@@ -25,10 +29,29 @@ class SongList(APIView):
             songs = songs.filter(year__gte=request.query_params.get('yearSince'))
         if 'yearTo' in request.query_params:
             songs = songs.filter(year__lte=request.query_params.get('yearTo'))
+
+        songs = songs.annotate(marks_avg=Avg('song_marks__mark'))
+        if 'mark' in request.query_params:
+            mark_filter = request.query_params.get('mark_filter')
+            if mark_filter == 'lte':
+                songs = songs.filter(marks_avg__lte=request.query_params.get('mark'))
+            elif mark_filter == 'gte':
+                songs = songs.filter(marks_avg__gte=request.query_params.get('mark'))
+            elif mark_filter == 'exact':
+                songs = songs.filter(marks_avg=request.query_params.get('mark'))
+            elif mark_filter == 'gt':
+                songs = songs.filter(marks_avg__gt=request.query_params.get('mark'))
+            elif mark_filter == 'lt':
+                songs = songs.filter(marks_avg__lt=request.query_params.get('mark'))
+
+        if 'user' in request.query_params:
+            #songs = songs.annotate(favourite=RawSQL(""""song_song"."id" IN (SELECT U0."song_id" FROM "favourite_song_favouritesong" U0 WHERE U0."author_id" = %s)""", params=[request.query_params.get('user')]))
+            songs = songs.annotate(favourite=RawSQL("""(SELECT U0."id" FROM "favourite_song_favouritesong" U0 WHERE U0."song_id" = "song_song"."id" AND U0."author_id" = %s)""", params=[request.query_params.get('user')]))
         if 'offset' in request.query_params:
             offset = int(request.query_params.get('offset'))
         else:
             offset = 0
+        print(songs.query)
         songs = songs[offset: offset + 20]
 
         serializer = SongSerializer(songs, many=True)

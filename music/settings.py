@@ -34,7 +34,8 @@ INSTALLED_APPS = [
     'song_comment',
     'album_comment',
     'song_mark',
-    'album_mark'
+    'album_mark',
+    'favourite_song',
 ]
 
 REST_FRAMEWORK = {
