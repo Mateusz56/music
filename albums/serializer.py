@@ -6,14 +6,12 @@ from song.serializer import SongSerializer
 
 class AlbumSerializer(serializers.ModelSerializer):
     songs_count = serializers.SerializerMethodField(read_only=True)
-    comments = serializers.StringRelatedField(many=True)
     comments_count = serializers.SerializerMethodField(read_only=True)
-    album_marks = serializers.StringRelatedField(many=True)
     marks_avg = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Album
-        fields = ['name', 'songs_count', 'comments_count', 'comments', 'album_marks', 'marks_avg']
+        fields = ['id', 'name', 'songs_count', 'comments_count', 'marks_avg']
 
     def get_songs_count(self, obj):
         return obj.songs.count()
