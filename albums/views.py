@@ -1,3 +1,4 @@
+from django.db.models import F, OuterRef
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -5,6 +6,7 @@ from rest_framework import status
 from albums.serializer import AlbumSerializer, AlbumSongSerializer
 from albums.models import Album, AlbumsSong
 from rest_framework import permissions
+from favourite_album.models import FavouriteAlbum
 
 
 class AlbumList(APIView):
@@ -18,9 +20,15 @@ class AlbumList(APIView):
             offset = 0
 
         if 'name' in request.query_params:
-            album = Album.objects.filter(name__contains=request.query_params.get('name'))
-
+            album = album.filter(name__contains=request.query_params.get('name'))
+        if 'user' in request.query_params:
+            favourite_subquery = FavouriteAlbum.objects.filter(author_id=request.query_params.get('user'), album_id=OuterRef('id')).values('id')
+            album = album.annotate(favourite=favourite_subquery)
+        if 'favourite' in request.query_params:
+            if request.query_params.get('favourite'):
+                album = album.filter(favourite__isnull=False)
         album = album[offset: offset + 20]
+        print(album.query)
         serializer = AlbumSerializer(album, many=True)
         return Response(serializer.data)
 

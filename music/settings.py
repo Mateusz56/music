@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'song_mark',
     'album_mark',
     'favourite_song',
+    'favourite_album',
 ]
 
 REST_FRAMEWORK = {

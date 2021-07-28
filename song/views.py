@@ -1,4 +1,4 @@
-from django.db.models.expressions import RawSQL
+from django.db.models.expressions import RawSQL, OuterRef
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -45,8 +45,11 @@ class SongList(APIView):
                 songs = songs.filter(marks_avg__lt=request.query_params.get('mark'))
 
         if 'user' in request.query_params:
-            #songs = songs.annotate(favourite=RawSQL(""""song_song"."id" IN (SELECT U0."song_id" FROM "favourite_song_favouritesong" U0 WHERE U0."author_id" = %s)""", params=[request.query_params.get('user')]))
-            songs = songs.annotate(favourite=RawSQL("""(SELECT U0."id" FROM "favourite_song_favouritesong" U0 WHERE U0."song_id" = "song_song"."id" AND U0."author_id" = %s)""", params=[request.query_params.get('user')]))
+            favourite_subquery = FavouriteSong.objects.filter(author_id=request.query_params.get('user'), song_id=OuterRef('id')).values('id')
+            songs = songs.annotate(favourite=favourite_subquery)
+        if 'favourite' in request.query_params:
+            if request.query_params.get('favourite'):
+                songs = songs.filter(favourite__isnull=False)
         if 'offset' in request.query_params:
             offset = int(request.query_params.get('offset'))
         else:
