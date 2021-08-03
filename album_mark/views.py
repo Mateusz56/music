@@ -38,24 +38,28 @@ class AlbumMarkDetail(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, format=None):
-        if 'token' in request.query_params and 'targetId' in request.query_params:
-            album_mark = AlbumMark.objects.all()
-            author = Token.objects.get(key=request.query_params.get('token'))
-            album_mark = album_mark.filter(author=author.user_id)
-            album_mark = album_mark.get(album=request.query_params.get('targetId'))
-            return Response(model_to_dict(album_mark), status=status.HTTP_200_OK)
+        try:
+            if 'token' in request.query_params and 'targetId' in request.query_params:
+                album_mark = AlbumMark.objects.all()
+                author = Token.objects.get(key=request.query_params.get('token'))
+                album_mark = album_mark.filter(author=author.user_id)
+                album_mark = album_mark.get(album=request.query_params.get('targetId'))
+                return Response(model_to_dict(album_mark), status=status.HTTP_200_OK)
+        except AlbumMark.DoesNotExist:
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
+        print(request.body)
         album_mark = AlbumMark.objects.all()
         body = json.loads(request.body)
         author_id = Token.objects.get(key=body['author']).user_id
         album_mark = album_mark.filter(author_id=author_id).filter(album_id=body['song'])
         if not album_mark:
-            song_mark = SongMark(author_id=author_id, song_id=body['song'], mark=body['mark'])
-            song_mark.save()
-            return Response(song_mark, status=status.HTTP_201_CREATED)
+            album_mark = AlbumMark(author_id=author_id, album_id=body['album'], mark=body['mark'])
+            album_mark.save()
+            return Response(model_to_dict(album_mark), status=status.HTTP_201_CREATED)
         else:
             album_mark.update(mark=body['mark'])
             return Response(model_to_dict(album_mark[0]), status=status.HTTP_200_OK)

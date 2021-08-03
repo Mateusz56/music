@@ -22,11 +22,21 @@ class AlbumList(APIView):
         if 'name' in request.query_params:
             album = album.filter(name__contains=request.query_params.get('name'))
         if 'user' in request.query_params:
-            favourite_subquery = FavouriteAlbum.objects.filter(author_id=request.query_params.get('user'), album_id=OuterRef('id')).values('id')
+            user_id = request.query_params.get('user')
+            favourite_subquery = FavouriteAlbum.objects.filter(author_id=user_id, album_id=OuterRef('id')).values('id')
             album = album.annotate(favourite=favourite_subquery)
+
         if 'favourite' in request.query_params:
             if request.query_params.get('favourite'):
                 album = album.filter(favourite__isnull=False)
+
+        if 'private' in request.query_params:
+            if request.query_params.get('private') and 'user_id' in locals():
+                album = album.filter(owners__in=user_id)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            album = album.filter(public__exact=True)
         album = album[offset: offset + 20]
         print(album.query)
         serializer = AlbumSerializer(album, many=True)

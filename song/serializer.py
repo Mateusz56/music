@@ -16,7 +16,7 @@ class SongSerializer(serializers.ModelSerializer):
         return obj.comments.count()
 
     def create(self, validated_data):
-        return Song.objects.create(validated_data)
+        return Song.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)

@@ -39,12 +39,15 @@ class SongMarkDetail(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, format=None):
-        if 'token' in request.query_params and 'targetId' in request.query_params:
-            song_mark = SongMark.objects.all()
-            author = Token.objects.get(key=request.query_params.get('token'))
-            song_mark = song_mark.filter(author=author.user_id)
-            song_mark = song_mark.get(song=request.query_params.get('targetId'))
-            return Response(model_to_dict(song_mark), status=status.HTTP_200_OK)
+        try:
+            if 'token' in request.query_params and 'targetId' in request.query_params:
+                song_mark = SongMark.objects.all()
+                author = Token.objects.get(key=request.query_params.get('token'))
+                song_mark = song_mark.filter(author=author.user_id)
+                song_mark = song_mark.get(song=request.query_params.get('targetId'))
+                return Response(model_to_dict(song_mark), status=status.HTTP_200_OK)
+        except SongMark.DoesNotExist:
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -56,7 +59,7 @@ class SongMarkDetail(APIView):
         if not song_mark:
             song_mark = SongMark(author_id=author_id, song_id=body['song'], mark=body['mark'])
             song_mark.save()
-            return Response(song_mark, status=status.HTTP_201_CREATED)
+            return Response(model_to_dict(song_mark), status=status.HTTP_201_CREATED)
         else:
             song_mark.update(mark=body['mark'])
             return Response(model_to_dict(song_mark[0]), status=status.HTTP_200_OK)

@@ -7,6 +7,7 @@ class Album(models.Model):
     name = models.CharField(max_length=120)
     songs = models.ManyToManyField(Song, through='AlbumsSong')
     owners = models.ManyToManyField(get_user_model())
+    public = models.BooleanField(default=True)
 
 
 class AlbumsSong(models.Model):

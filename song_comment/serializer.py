@@ -5,7 +5,7 @@ from song_comment.models import SongComment
 class SongCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = SongComment
-        fields = ['song', 'author', 'create_date', 'content']
+        fields = ['id', 'song', 'author', 'create_date', 'content']
 
     def create(self, validated_data):
         return SongComment.objects.create(validated_data)

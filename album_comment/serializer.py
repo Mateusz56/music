@@ -5,7 +5,7 @@ from album_comment.models import AlbumComment
 class AlbumCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = AlbumComment
-        fields = ['album', 'author', 'create_date', 'content']
+        fields = ['id', 'album', 'author', 'create_date', 'content']
 
     def create(self, validated_data):
         return AlbumComment.objects.create(validated_data)
