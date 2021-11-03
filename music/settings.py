@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'album_mark',
     'favourite_song',
     'favourite_album',
+    'album_invitation'
 ]
 
 REST_FRAMEWORK = {
@@ -45,7 +46,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 1
+    'PAGE_SIZE': 100
 }
 
 MIDDLEWARE = [
@@ -93,13 +94,21 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'musicdb',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'adminadmin',
+    #     'HOST': '127.0.0.1',
+    #     'PORT': '5432',
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'musicdb',
-        'USER': 'postgres',
-        'PASSWORD': 'adminadmin',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'sql11448799',
+        'USER': 'sql11448799',
+        'PASSWORD': 'H9XP9sCEr8',
+        'HOST': 'sql11.freesqldatabase.com',
+        'PORT': '3306',
     }
 }
 

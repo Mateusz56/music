@@ -7,3 +7,6 @@ class AlbumMark(models.Model):
     album = models.ForeignKey(Album, on_delete=models.CASCADE, related_name='album_marks')
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     mark = models.PositiveSmallIntegerField()
+
+    class Meta:
+        unique_together = (("album", "author"),)

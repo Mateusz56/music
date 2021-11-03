@@ -32,12 +32,14 @@ class AlbumList(APIView):
 
         if 'private' in request.query_params:
             if request.query_params.get('private') and 'user_id' in locals():
-                album = album.filter(owners__in=user_id)
+                album = album.filter(owners__in=[user_id])
+                print(album.query)
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             album = album.filter(public__exact=True)
-        album = album[offset: offset + 20]
+        if 'get_all' not in request.query_params:
+            album = album[offset: offset + 20]
         print(album.query)
         serializer = AlbumSerializer(album, many=True)
         return Response(serializer.data)
@@ -47,6 +49,7 @@ class AlbumList(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -66,10 +69,11 @@ class AlbumDetail(APIView):
 
     def put(self, request, pk, format=None):
         album = self.get_object(pk)
-        serializer = AlbumSerializer(album, data=request.data)
+        serializer = AlbumSerializer(album, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):

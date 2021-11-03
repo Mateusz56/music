@@ -8,11 +8,16 @@ class AlbumSerializer(serializers.ModelSerializer):
     songs_count = serializers.SerializerMethodField(read_only=True)
     comments_count = serializers.SerializerMethodField(read_only=True)
     marks_avg = serializers.SerializerMethodField(read_only=True)
-    favourite = serializers.IntegerField(read_only=True)
+    favourite = serializers.IntegerField(read_only=True, required=False)
+    add_song = serializers.IntegerField(write_only=True, required=False)
+    remove_song = serializers.IntegerField(write_only=True, required=False)
+    add_owner = serializers.IntegerField(write_only=True, required=False)
+    remove_owner = serializers.IntegerField(write_only=True, required=False)
 
     class Meta:
         model = Album
-        fields = ['id', 'name', 'songs_count', 'comments_count', 'marks_avg', 'favourite']
+        fields = ['id', 'name', 'songs_count', 'comments_count', 'marks_avg', 'favourite', 'public', 'owners',
+                  'add_song', 'remove_song', 'add_owner', 'remove_owner']
 
     def get_songs_count(self, obj):
         return obj.songs.count()
@@ -24,12 +29,21 @@ class AlbumSerializer(serializers.ModelSerializer):
         return obj.album_marks.aggregate(Avg('mark'))['mark__avg']
 
     def create(self, validated_data):
-        return Album.objects.create(validated_data)
+        album = Album(name=validated_data.get('name'), public=validated_data.get('public'))
+        album.save()
+        for owner in validated_data.get('owners'):
+            album.owners.add(owner.id)
+        album.save()
+        return album
 
     def update(self, instance, validated_data):
+        print(validated_data)
         instance.name = validated_data.get('name', instance.name)
-        instance.songs = validated_data.get('songs', instance.author)
-        instance.owners = validated_data.get('owners', instance.create_date)
+        if 'add_song' in validated_data:
+            instance.songs.add(validated_data.get('add_song'))
+        if 'owners' in validated_data:
+            instance.owners.add(validated_data.get('owners'))
+        instance.public = validated_data.get('public', instance.public)
         instance.save()
         return instance
 

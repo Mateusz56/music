@@ -7,3 +7,6 @@ class SongMark(models.Model):
     song = models.ForeignKey(Song, on_delete=models.CASCADE, related_name='song_marks')
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     mark = models.PositiveSmallIntegerField()
+
+    class Meta:
+        unique_together = (("song", "author"),)
