@@ -1,9 +1,15 @@
+from django.db.models import Avg
+from django.http import HttpResponse
 from django.shortcuts import render
+from django.views import View
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 
+from album_comment.models import AlbumComment
 from album_invitation.models import AlbumInvitation
 from album_invitation.serializer import AlbumInvitationSerializer
+from album_mark.models import AlbumMark
+from albums.models import AlbumsSong
 
 
 class FavouriteAlbumDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -30,10 +36,22 @@ class FavouriteAlbumList(generics.ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AlbumInvitationUser(generics.ListAPIView):
+class AlbumInvitationUser(View):
     permission_classes = [permissions.AllowAny]
     serializer_class = AlbumInvitationSerializer
 
-    def get_queryset(self):
+    def get(self, request, *args, **kwargs):
         user = self.kwargs['user']
-        return AlbumInvitation.objects.filter(user=user)
+        response = HttpResponse(content_type='application/json')
+        response.status_code = 200
+        querySet = AlbumInvitation.objects.filter(user=user)
+        querySet = querySet.select_related('album')
+        values = querySet.values('album', 'album__name')
+        ret = []
+        for v in values:
+            ret.append({'album': v.get('album'), 'album_name': v.get('album__name'),
+                        'comment_count': AlbumComment.objects.filter(album=v['album']).count(),
+                        'song_count': AlbumsSong.objects.filter(album=v['album']).count(),
+                        'mark_avg': AlbumMark.objects.filter(album=v['album']).aggregate(Avg('mark'))['mark__avg']})
+        response.write(ret)
+        return response
