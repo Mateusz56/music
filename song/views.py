@@ -48,7 +48,7 @@ class SongList(APIView):
             favourite_subquery = FavouriteSong.objects.filter(author_id=request.query_params.get('user'), song_id=OuterRef('id')).values('id')
             songs = songs.annotate(favourite=favourite_subquery)
         if 'favourite' in request.query_params:
-            if request.query_params.get('favourite'):
+            if request.query_params.get('favourite') and request.query_params.get('favourite') != 'false':
                 songs = songs.filter(favourite__isnull=False)
         if 'offset' in request.query_params:
             offset = int(request.query_params.get('offset'))

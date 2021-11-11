@@ -28,3 +28,12 @@ class FavouriteAlbumList(generics.ListCreateAPIView):
         except Exception as exc:
             return Response(data=exc.args[0]['error'], status=exc.args[0]['status'])
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AlbumInvitationUser(generics.ListAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = AlbumInvitationSerializer
+
+    def get_queryset(self):
+        user = self.kwargs['user']
+        return AlbumInvitation.objects.filter(user=user)

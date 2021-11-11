@@ -27,10 +27,10 @@ class AlbumList(APIView):
             album = album.annotate(favourite=favourite_subquery)
 
         if 'favourite' in request.query_params:
-            if request.query_params.get('favourite'):
+            if request.query_params.get('favourite') and request.query_params.get('favourite') != 'false':
                 album = album.filter(favourite__isnull=False)
 
-        if 'private' in request.query_params:
+        if 'private' in request.query_params and request.query_params.get('private') != 'false':
             if request.query_params.get('private') and 'user_id' in locals():
                 album = album.filter(owners__in=[user_id])
                 print(album.query)

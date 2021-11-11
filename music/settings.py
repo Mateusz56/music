@@ -90,10 +90,10 @@ WSGI_APPLICATION = 'music.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql',
     #     'NAME': 'musicdb',
@@ -102,14 +102,14 @@ DATABASES = {
     #     'HOST': '127.0.0.1',
     #     'PORT': '5432',
     # }
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sql11448799',
-        'USER': 'sql11448799',
-        'PASSWORD': 'H9XP9sCEr8',
-        'HOST': 'sql11.freesqldatabase.com',
-        'PORT': '3306',
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'sql11448799',
+    #     'USER': 'sql11448799',
+    #     'PASSWORD': 'H9XP9sCEr8',
+    #     'HOST': 'sql11.freesqldatabase.com',
+    #     'PORT': '3306',
+    # }
 }
 
 
