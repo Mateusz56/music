@@ -1,3 +1,5 @@
+import json
+
 from django.db.models import Avg
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -48,10 +50,16 @@ class AlbumInvitationUser(View):
         querySet = querySet.select_related('album')
         values = querySet.values('album', 'album__name')
         ret = []
+        response.write('{"albums": ')
         for v in values:
-            ret.append({'album': v.get('album'), 'album_name': v.get('album__name'),
+            ret.append({"album": v.get('album'), 'album_name': v.get('album__name'),
                         'comment_count': AlbumComment.objects.filter(album=v['album']).count(),
                         'song_count': AlbumsSong.objects.filter(album=v['album']).count(),
                         'mark_avg': AlbumMark.objects.filter(album=v['album']).aggregate(Avg('mark'))['mark__avg']})
-        response.write(ret)
+        response.write(str(ret).replace("'", '"').replace('None', 'null'))
+        response.write('}')
         return response
+
+    def post(self, request, *args, **kwargs):
+        print(self.kwargs)
+        return 'asd'
