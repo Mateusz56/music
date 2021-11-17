@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.models import Avg
 from requests import Response
 from rest_framework import serializers, status
 from album_invitation.models import AlbumInvitation
@@ -6,11 +7,29 @@ from albums.models import Album
 
 
 class AlbumInvitationSerializer(serializers.ModelSerializer):
+    queryset = AlbumInvitation.objects.all()
     username = serializers.CharField(write_only=True, required=True)
+    userId = serializers.IntegerField(write_only=True, required=False)
+    album_name = serializers.SerializerMethodField(read_only=True)
+    songs_count = serializers.SerializerMethodField(read_only=True)
+    comments_count = serializers.SerializerMethodField(read_only=True)
+    marks_avg = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = AlbumInvitation
-        fields = ['album', 'username']
+        fields = ['id', 'album', 'username', 'userId', 'album_name', 'marks_avg', 'comments_count', 'songs_count']
+
+    def get_album_name(self, obj):
+        return obj.album.name
+
+    def get_songs_count(self, obj):
+        return obj.album.songs.count()
+
+    def get_comments_count(self, obj):
+        return obj.album.comments.count()
+
+    def get_marks_avg(self, obj):
+        return obj.album.album_marks.aggregate(Avg('mark'))['mark__avg']
 
     def is_valid(self, raise_exception=False):
         data = self._kwargs['data']
