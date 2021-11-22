@@ -5,9 +5,9 @@ from song.serializer import SongSerializer
 
 
 class AlbumSerializer(serializers.ModelSerializer):
-    songs_count = serializers.SerializerMethodField(read_only=True)
-    comments_count = serializers.SerializerMethodField(read_only=True)
-    marks_avg = serializers.SerializerMethodField(read_only=True)
+    songs_count = serializers.IntegerField(read_only=True)
+    comments_count = serializers.IntegerField(read_only=True)
+    marks_avg = serializers.IntegerField(read_only=True)
     favourite = serializers.IntegerField(read_only=True, required=False)
     add_song = serializers.IntegerField(write_only=True, required=False)
     remove_song = serializers.IntegerField(write_only=True, required=False)
@@ -18,15 +18,6 @@ class AlbumSerializer(serializers.ModelSerializer):
         model = Album
         fields = ['id', 'name', 'songs_count', 'comments_count', 'marks_avg', 'favourite', 'public', 'owners',
                   'add_song', 'remove_song', 'add_owner', 'remove_owner']
-
-    def get_songs_count(self, obj):
-        return obj.songs.count()
-
-    def get_comments_count(self, obj):
-        return obj.comments.count()
-
-    def get_marks_avg(self, obj):
-        return obj.album_marks.aggregate(Avg('mark'))['mark__avg']
 
     def create(self, validated_data):
         album = Album(name=validated_data.get('name'), public=validated_data.get('public'))

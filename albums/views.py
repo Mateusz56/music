@@ -1,8 +1,11 @@
-from django.db.models import F, OuterRef
+from django.db.models import F, OuterRef, Value, Avg, Count
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+from album_comment.models import AlbumComment
+from album_mark.models import AlbumMark
 from albums.serializer import AlbumSerializer, AlbumSongSerializer
 from albums.models import Album, AlbumsSong
 from rest_framework import permissions
@@ -14,6 +17,19 @@ class AlbumList(APIView):
 
     def get(self, request, format=None):
         album = Album.objects.all()
+
+        marks_subquery = AlbumMark.objects.filter(album_id=OuterRef('id'))
+        marks_subquery = marks_subquery.annotate(dummy=Value(1)).values('dummy').annotate(marks_avg=Avg('mark')).values_list('marks_avg')
+        album = album.annotate(marks_avg=marks_subquery)
+
+        comments_subquery = AlbumComment.objects.filter(album_id=OuterRef('id'))
+        comments_subquery = comments_subquery.annotate(dummy=Value(1)).values('dummy').annotate(count=Count('*')).values_list('count')
+        album = album.annotate(comments_count=comments_subquery)
+
+        songs_count_subquery = AlbumsSong.objects.filter(album_id=OuterRef('id'))
+        songs_count_subquery = songs_count_subquery.annotate(dummy=Value(1)).values('dummy').annotate(count=Count('*')).values_list('count')
+        album = album.annotate(songs_count=songs_count_subquery)
+
         if 'page' in request.query_params:
             offset = 20 * int(request.query_params.get('page'))
         else:
@@ -30,6 +46,9 @@ class AlbumList(APIView):
             if request.query_params.get('favourite') and request.query_params.get('favourite') != 'false':
                 album = album.filter(favourite__isnull=False)
 
+        if 'sortMode' in request.query_params:
+            album = album.order_by(request.query_params.get('sortMode'))
+
         if 'private' in request.query_params and request.query_params.get('private') != 'false':
             if request.query_params.get('private') and 'user_id' in locals():
                 album = album.filter(owners__in=[user_id])
@@ -39,6 +58,7 @@ class AlbumList(APIView):
             album = album.filter(public__exact=True)
         if 'get_all' not in request.query_params:
             album = album[offset: offset + 20]
+
         serializer = AlbumSerializer(album, many=True)
         return Response(serializer.data)
 

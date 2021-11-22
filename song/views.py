@@ -1,4 +1,4 @@
-from django.db.models.expressions import RawSQL, OuterRef
+from django.db.models.expressions import RawSQL, OuterRef, Value
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,8 +9,11 @@ from favourite_song.models import FavouriteSong
 from song.serializer import SongSerializer
 from song.models import Song
 from rest_framework import permissions
-from django.db.models import Q, F, Subquery, Avg
+from django.db.models import Q, F, Subquery, Avg, Count
 import json
+
+from song_comment.models import SongComment
+from song_mark.models import SongMark
 
 
 class SongList(APIView):
@@ -30,7 +33,14 @@ class SongList(APIView):
         if 'yearTo' in request.query_params:
             songs = songs.filter(year__lte=request.query_params.get('yearTo'))
 
-        songs = songs.annotate(marks_avg=Avg('song_marks__mark'))
+        marks_subquery = SongMark.objects.filter(song_id=OuterRef('id'))
+        marks_subquery = marks_subquery.annotate(dummy=Value(1)).values('dummy').annotate(marks_avg=Avg('mark')).values_list('marks_avg')
+        songs = songs.annotate(marks_avg=marks_subquery)
+
+        comments_subquery = SongComment.objects.filter(song_id=OuterRef('id'))
+        comments_subquery = comments_subquery.annotate(dummy=Value(1)).values('dummy').annotate(count=Count('*')).values_list('count')
+        songs = songs.annotate(comments_count=comments_subquery)
+
         if 'mark' in request.query_params:
             mark_filter = request.query_params.get('mark_filter')
             if mark_filter == 'lte':
@@ -54,7 +64,9 @@ class SongList(APIView):
             offset = int(request.query_params.get('offset'))
         else:
             offset = 0
-        print(songs.query)
+
+        if 'sortMode' in request.query_params:
+            songs = songs.order_by(request.query_params.get('sortMode'))
         songs = songs[offset: offset + 20]
 
         serializer = SongSerializer(songs, many=True)

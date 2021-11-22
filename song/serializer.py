@@ -4,16 +4,14 @@ from song.models import Song
 
 
 class SongSerializer(serializers.ModelSerializer):
-    comments_count = serializers.SerializerMethodField(read_only=True)
+    comments_count = serializers.IntegerField(read_only=True)
     marks_avg = serializers.FloatField(read_only=True)
     favourite = serializers.IntegerField(read_only=True)
+    sort_mode = serializers.CharField(read_only=True)
 
     class Meta:
         model = Song
-        fields = ['id', 'title', 'performer', 'year', 'genre', 'comments_count', 'marks_avg', 'favourite']
-
-    def get_comments_count(self, obj):
-        return obj.comments.count()
+        fields = ['id', 'title', 'performer', 'year', 'genre', 'comments_count', 'marks_avg', 'favourite', 'sort_mode']
 
     def create(self, validated_data):
         return Song.objects.create(**validated_data)
