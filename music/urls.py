@@ -28,7 +28,7 @@ urlpatterns = [
     path('', include('favourite_song.urls')),
     path('', include('favourite_album.urls')),
     path('', include('album_invitation.urls')),
-    path('api-token-auth/', views.obtain_auth_token),
+    path('', include('user.urls')),
     path('user/', UserPost.as_view()),
     path('user/<int:pk>/', UserDetail.as_view()),
 ]
