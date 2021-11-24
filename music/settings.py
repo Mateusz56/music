@@ -13,7 +13,7 @@ SECRET_KEY = '-5h*!svr0m6fkn%04d_)qfk=u$=8g2ct))^0j*jtz=n(_=k6kp'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'inzynierka.bieda.it']
 APPEND_SLASH = True
 
 # Application definition
@@ -97,10 +97,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'musicdb',
-        'USER': 'postgres',
+        'USER': 'root',
         'PASSWORD': 'adminadmin',
         'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'PORT': '40031',
     }
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
