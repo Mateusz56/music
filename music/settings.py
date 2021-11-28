@@ -96,10 +96,10 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'musicdb',
+        'NAME': 'music',
         'USER': 'root',
         'PASSWORD': 'adminadmin',
-        'HOST': '127.0.0.1',
+        'HOST': 'maluch.mikr.us',
         'PORT': '40031',
     }
     # 'default': {

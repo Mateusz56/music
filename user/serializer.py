@@ -4,19 +4,24 @@ from rest_framework import serializers, permissions
 
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(required=False, write_only=True)
+
     class Meta:
         model = get_user_model()
-        fields = '__all__'
+        fields = ['first_name', 'last_name', 'email', 'password']
 
     def create(self, validated_data):
         return get_user_model().objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):
-        instance.username = validated_data.get('username', instance.username)
-        instance.password = validated_data.get('password', instance.password)
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.email = validated_data.get('email', instance.email)
+        if 'password' in validated_data:
+            instance.set_password(validated_data.get('password'))
+        if 'first_name' in validated_data:
+            instance.first_name = validated_data.get('first_name')
+        if 'last_name' in validated_data:
+            instance.last_name = validated_data.get('last_name')
+        if 'email' in validated_data:
+            instance.email = validated_data.get('email')
         instance.save()
         return instance
 
@@ -24,4 +29,4 @@ class UserSerializer(serializers.ModelSerializer):
 class UserSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ['id', 'username']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email']

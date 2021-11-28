@@ -1,8 +1,11 @@
 from django.http import Http404
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+from music import Permissions
 from user.serializer import UserSerializer, UserSimpleSerializer
 from django.contrib.auth import get_user_model
 from rest_framework import permissions
@@ -21,7 +24,8 @@ class UserPost(APIView):
 
 
 class UserDetail(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [Permissions.UserDoubleAuth]
+    authentication_classes = [TokenAuthentication]
 
     def get_object(self, pk):
         try:
@@ -34,8 +38,8 @@ class UserDetail(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
-        user = self.get_object(pk)
+    def put(self, request, format=None):
+        user = Token.objects.get(key=request.auth).user
         serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()

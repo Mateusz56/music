@@ -46,7 +46,7 @@ class AlbumMarkDetail(APIView):
                 album_mark = album_mark.get(album=request.query_params.get('targetId'))
                 return Response(model_to_dict(album_mark), status=status.HTTP_200_OK)
         except AlbumMark.DoesNotExist:
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(data={}, status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
