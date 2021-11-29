@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,7 +14,8 @@ SECRET_KEY = '-5h*!svr0m6fkn%04d_)qfk=u$=8g2ct))^0j*jtz=n(_=k6kp'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'inzynierka.bieda.it']
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
 APPEND_SLASH = True
 
 # Application definition
@@ -97,7 +99,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'music',
-        'USER': 'root',
+        'USER': 'admin',
         'PASSWORD': 'adminadmin',
         'HOST': 'maluch.mikr.us',
         'PORT': '40031',
