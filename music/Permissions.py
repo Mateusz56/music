@@ -52,7 +52,7 @@ class IsAuthorPermissionOrReadonly(permissions.BasePermission):
 class AlbumPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         try:
-            if obj.public or request.user == getattr(obj, 'author', None):
+            if obj.public or request.user in getattr(obj, 'owners', []).all():
                 return True
         except:
             return False

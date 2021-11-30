@@ -30,7 +30,6 @@ class AlbumInvitationUser(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated, Permissions.AlbumInvitationAuth]
     authentication_classes = [TokenAuthentication]
     serializer_class = AlbumInvitationSerializer
-    lookup_field = 'userId'
 
     def get_object(self, pk):
         try:
