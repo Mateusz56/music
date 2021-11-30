@@ -41,9 +41,9 @@ class AlbumInvitationSerializer(serializers.ModelSerializer):
 
         if album_invitation is not None:
             raise serializers.ValidationError({'status': status.HTTP_406_NOT_ACCEPTABLE, 'error': 'Podany użytkownik otrzymał już zaproszenie do tego albumu.'})
-        album = Album.objects.filter(owners=user).first()
 
-        if album is not None:
+        print(Album.objects.get(pk=data['album']).owners.all())
+        if user in Album.objects.get(pk=data['album']).owners.all():
             raise serializers.ValidationError({'status': status.HTTP_406_NOT_ACCEPTABLE, 'error': 'Użytkownik jest już współwłaścicielem tego albumu.'})
 
         return super(AlbumInvitationSerializer, self).is_valid()

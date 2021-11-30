@@ -1,21 +1,16 @@
-import json
 from rest_framework import generics, permissions, status
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 from album_invitation.models import AlbumInvitation
 from album_invitation.serializer import AlbumInvitationSerializer
-from albums.models import Album
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 
-class FavouriteAlbumDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.AllowAny]
-
-    queryset = AlbumInvitation.objects.all()
-    serializer_class = AlbumInvitationSerializer
+from music import Permissions
 
 
 class FavouriteAlbumList(generics.ListCreateAPIView):
-    permission_classes = [permissions.AllowAny]
-
+    permission_classes = [permissions.IsAuthenticated, Permissions.AlbumInvitationAuth]
+    authentication_classes = [TokenAuthentication]
     queryset = AlbumInvitation.objects.all()
     serializer_class = AlbumInvitationSerializer
 
@@ -23,6 +18,7 @@ class FavouriteAlbumList(generics.ListCreateAPIView):
         serializer = AlbumInvitationSerializer(data=request.data)
         try:
             if serializer.is_valid(raise_exception=True):
+                self.check_object_permissions(self.request, serializer.validated_data['album'])
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as exc:
@@ -31,20 +27,26 @@ class FavouriteAlbumList(generics.ListCreateAPIView):
 
 
 class AlbumInvitationUser(generics.ListAPIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated, Permissions.AlbumInvitationAuth]
+    authentication_classes = [TokenAuthentication]
     serializer_class = AlbumInvitationSerializer
-
     lookup_field = 'userId'
 
+    def get_object(self, pk):
+        try:
+            obj = AlbumInvitation.objects.get(pk=pk)
+            return obj
+        except AlbumInvitation.DoesNotExist:
+            raise Http404
+
     def get_queryset(self):
-        queryset = AlbumInvitation.objects.filter(user=self.kwargs['userId'])
+        queryset = AlbumInvitation.objects.filter(user=self.request.user)
         return queryset
 
     def post(self, request, *args, **kwargs):
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        album_invitation = AlbumInvitation.objects.get(id=body['albumInvitation'])
-        if body['accept'] == 1:
+        album_invitation = self.get_object(request.data.get('albumInvitation'))
+        self.check_object_permissions(self.request, album_invitation)
+        if request.data.get('accept') == 1:
             album = album_invitation.album
             album.owners.add(album_invitation.user)
             album.save()

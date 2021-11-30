@@ -1,5 +1,6 @@
 from django.db.models.expressions import RawSQL, OuterRef, Value
 from django.http import Http404
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,14 +11,13 @@ from song.serializer import SongSerializer
 from song.models import Song
 from rest_framework import permissions
 from django.db.models import Q, F, Subquery, Avg, Count
-import json
 
 from song_comment.models import SongComment
 from song_mark.models import SongMark
 
 
 class SongList(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, format=None):
         songs = Song.objects.all()
@@ -81,11 +81,14 @@ class SongList(APIView):
 
 
 class SongDetail(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    authentication_classes = [TokenAuthentication]
 
     def get_object(self, pk):
         try:
-            return Song.objects.get(pk=pk)
+            obj = Song.objects.get(pk=pk)
+            self.check_object_permissions(self.request, obj)
+            return obj
         except Song.DoesNotExist:
             raise Http404
 

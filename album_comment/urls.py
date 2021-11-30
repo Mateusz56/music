@@ -4,7 +4,6 @@ from album_comment import views
 
 urlpatterns = [
     path('album_comment/', views.AlbumCommentList.as_view()),
-    path('album_comment/<int:pk>/', views.AlbumCommentDetail.as_view())
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

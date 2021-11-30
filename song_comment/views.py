@@ -11,7 +11,7 @@ from rest_framework import permissions
 import json
 
 class SongCommentList(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, format=None):
         song_comment = SongComment.objects.all()
@@ -34,7 +34,7 @@ class SongCommentList(APIView):
 
 
 class SongCommentDetail(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_object(self, pk):
         try:
