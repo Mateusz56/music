@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.db.models import Avg
-from requests import Response
 from rest_framework import serializers, status
 from album_invitation.models import AlbumInvitation
 from albums.models import Album

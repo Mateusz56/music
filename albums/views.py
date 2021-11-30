@@ -38,8 +38,9 @@ class AlbumList(APIView):
 
         if 'name' in request.query_params:
             album = album.filter(name__contains=request.query_params.get('name'))
-        if 'user' in request.query_params:
-            user_id = request.query_params.get('user')
+
+        if request.user.id is not None:
+            user_id = request.user.id
             favourite_subquery = FavouriteAlbum.objects.filter(author_id=user_id, album_id=OuterRef('id')).values('id')
             album = album.annotate(favourite=favourite_subquery)
 

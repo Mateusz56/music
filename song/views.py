@@ -54,8 +54,8 @@ class SongList(APIView):
             elif mark_filter == 'lt':
                 songs = songs.filter(marks_avg__lt=request.query_params.get('mark'))
 
-        if 'user' in request.query_params:
-            favourite_subquery = FavouriteSong.objects.filter(author_id=request.query_params.get('user'), song_id=OuterRef('id')).values('id')
+        if request.user.id is not None:
+            favourite_subquery = FavouriteSong.objects.filter(author_id=request.user.id, song_id=OuterRef('id')).values('id')
             songs = songs.annotate(favourite=favourite_subquery)
         if 'favourite' in request.query_params:
             if request.query_params.get('favourite') and request.query_params.get('favourite') != 'false':

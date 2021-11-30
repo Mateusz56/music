@@ -18,3 +18,6 @@ class FavouriteAlbumList(generics.ListCreateAPIView):
 
     queryset = FavouriteAlbum.objects.all()
     serializer_class = FavouriteAlbumSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
