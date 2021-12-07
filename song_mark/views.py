@@ -17,7 +17,7 @@ from django.contrib.auth import get_user_model
 
 
 class SongMarkView(APIView):
-    permission_classes = [permissions.IsAuthenticated, Permissions.IsAuthorPermissionOrReadonly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, Permissions.IsAuthorPermissionOrReadonly]
 
     def get(self, request, format=None):
         song_mark = SongMark.objects.all()
