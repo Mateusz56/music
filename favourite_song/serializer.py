@@ -5,7 +5,9 @@ from favourite_song.models import FavouriteSong
 class FavouriteSongSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavouriteSong
-        fields = '__all__'
+        fields = ['id', 'song']
+
+    author = serializers.CurrentUserDefault()
 
     def create(self, validated_data):
         return FavouriteSong.objects.create(**validated_data)

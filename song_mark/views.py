@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.forms.models import model_to_dict
 
+from music import Permissions
 from song.models import Song
 from song_mark.serializer import SongMarkSerializer
 from song_mark.models import SongMark
@@ -16,7 +17,7 @@ from django.contrib.auth import get_user_model
 
 
 class SongMarkView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated, Permissions.IsAuthorPermissionOrReadonly]
 
     def get(self, request, format=None):
         song_mark = SongMark.objects.all()
@@ -36,18 +37,18 @@ class SongMarkView(APIView):
 
 
 class SongMarkDetail(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated, Permissions.IsAuthorPermissionOrReadonly]
 
     def get(self, request, format=None):
         try:
-            if 'token' in request.query_params and 'targetId' in request.query_params:
+            if 'targetId' in request.query_params:
                 song_mark = SongMark.objects.all()
-                author = Token.objects.get(key=request.query_params.get('token'))
-                song_mark = song_mark.filter(author=author.user_id)
+                author = request.user
+                song_mark = song_mark.filter(author=author)
                 song_mark = song_mark.get(song=request.query_params.get('targetId'))
                 return Response(model_to_dict(song_mark), status=status.HTTP_200_OK)
         except SongMark.DoesNotExist:
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(data={}, status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
 

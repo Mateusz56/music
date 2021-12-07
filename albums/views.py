@@ -10,10 +10,11 @@ from albums.serializer import AlbumSerializer, AlbumSongSerializer
 from albums.models import Album, AlbumsSong
 from rest_framework import permissions
 from favourite_album.models import FavouriteAlbum
+from music import Permissions
 
 
 class AlbumList(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, format=None):
         album = Album.objects.all()
@@ -37,8 +38,9 @@ class AlbumList(APIView):
 
         if 'name' in request.query_params:
             album = album.filter(name__contains=request.query_params.get('name'))
-        if 'user' in request.query_params:
-            user_id = request.query_params.get('user')
+
+        if request.user.id is not None:
+            user_id = request.user.id
             favourite_subquery = FavouriteAlbum.objects.filter(author_id=user_id, album_id=OuterRef('id')).values('id')
             album = album.annotate(favourite=favourite_subquery)
 
@@ -71,11 +73,13 @@ class AlbumList(APIView):
 
 
 class AlbumDetail(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [Permissions.AlbumPermission]
 
     def get_object(self, pk):
         try:
-            return Album.objects.get(pk=pk)
+            album = Album.objects.get(pk=pk)
+            self.check_object_permissions(self.request, album)
+            return album
         except Album.DoesNotExist:
             raise Http404
 
