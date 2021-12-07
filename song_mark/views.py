@@ -37,7 +37,7 @@ class SongMarkView(APIView):
 
 
 class SongMarkDetail(APIView):
-    permission_classes = [permissions.IsAuthenticated, Permissions.IsAuthorPermissionOrReadonly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, Permissions.IsAuthorPermissionOrReadonly]
 
     def get(self, request, format=None):
         try:
