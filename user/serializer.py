@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
-from song.models import Song
-from rest_framework import serializers, permissions
+from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -8,9 +7,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['first_name', 'last_name', 'email', 'password']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password']
 
     def create(self, validated_data):
+        print(validated_data)
         return get_user_model().objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):
