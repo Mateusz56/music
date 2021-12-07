@@ -101,7 +101,7 @@ DATABASES = {
         'NAME': 'music',
         'USER': 'admin',
         'PASSWORD': 'adminadmin',
-        'HOST': 'maluch.mikr.us',
+        'HOST': '127.0.0.1',
         'PORT': '40031',
     }
     # 'default': {
