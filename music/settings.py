@@ -102,6 +102,7 @@ DATABASES = {
         'USER': 'admin',
         'PASSWORD': 'adminadmin',
         'HOST': '127.0.0.1',
+    #    'HOST': 'maluch.mikr.us',
         'PORT': '40031',
     }
     # 'default': {
@@ -137,7 +138,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pl'
 
 TIME_ZONE = 'UTC'
 

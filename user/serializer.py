@@ -1,9 +1,15 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import RegexValidator, EmailValidator
 from rest_framework import serializers
+
+alphanumeric = RegexValidator(r'^[0-9a-zA-Z]*$', 'Pole może zawierać tylko cyfry i litery.')
 
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(required=False, write_only=True)
+    password = serializers.CharField(min_length=5, required=False, write_only=True)
+    first_name = serializers.CharField(min_length=2, required=True, validators=[alphanumeric])
+    last_name = serializers.CharField(min_length=2, required=True, validators=[alphanumeric])
+    email = serializers.EmailField(required=True)
 
     class Meta:
         model = get_user_model()
@@ -30,3 +36,17 @@ class UserSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ['id', 'username', 'first_name', 'last_name', 'email']
+
+
+class CreateUserSerializer(UserSerializer):
+    username = serializers.CharField(min_length=3, required=True)
+    password = serializers.CharField(min_length=5, write_only=True)
+    first_name = serializers.CharField(min_length=2, required=True, validators=[alphanumeric])
+    last_name = serializers.CharField(min_length=2, required=True, validators=[alphanumeric])
+
+
+class UpdateUserSerializer(UserSerializer):
+    username = serializers.CharField(required=False, read_only=True)
+    password = serializers.CharField(min_length=5, write_only=True, required=False)
+    first_name = serializers.CharField(min_length=2, required=False, validators=[alphanumeric])
+    last_name = serializers.CharField(min_length=2, required=False, validators=[alphanumeric])

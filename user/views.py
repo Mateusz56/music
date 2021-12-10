@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from music import Permissions
-from user.serializer import UserSerializer, UserSimpleSerializer
+from user.serializer import UserSerializer, UserSimpleSerializer, CreateUserSerializer, UpdateUserSerializer
 from django.contrib.auth import get_user_model
 from rest_framework import permissions
 from rest_framework import generics, permissions, status
@@ -16,7 +16,7 @@ class UserPost(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, format=None):
-        serializer = UserSerializer(data=request.data)
+        serializer = CreateUserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -40,7 +40,7 @@ class UserDetail(APIView):
 
     def put(self, request, format=None):
         user = Token.objects.get(key=request.auth).user
-        serializer = UserSerializer(user, data=request.data)
+        serializer = UpdateUserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
