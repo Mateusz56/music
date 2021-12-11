@@ -8,6 +8,9 @@ class SongSerializer(serializers.ModelSerializer):
     marks_avg = serializers.FloatField(read_only=True)
     favourite = serializers.IntegerField(read_only=True)
     sort_mode = serializers.CharField(read_only=True)
+    title = serializers.CharField(required=True, min_length=1)
+    performer = serializers.CharField(required=True, min_length=1)
+    year = serializers.IntegerField(required=True, min_value=1900, max_value=2022)
 
     class Meta:
         model = Song

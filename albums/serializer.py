@@ -13,6 +13,7 @@ class AlbumSerializer(serializers.ModelSerializer):
     remove_song = serializers.IntegerField(write_only=True, required=False)
     add_owner = serializers.IntegerField(write_only=True, required=False)
     remove_owner = serializers.IntegerField(write_only=True, required=False)
+    name = serializers.CharField(required=True, min_length=1)
 
     class Meta:
         model = Album
@@ -28,7 +29,6 @@ class AlbumSerializer(serializers.ModelSerializer):
         return album
 
     def update(self, instance, validated_data):
-        print(validated_data)
         instance.name = validated_data.get('name', instance.name)
         if 'add_song' in validated_data:
             instance.songs.add(validated_data.get('add_song'))

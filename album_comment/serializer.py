@@ -1,8 +1,12 @@
 from rest_framework import serializers
+from rest_framework.fields import CharField
+
 from album_comment.models import AlbumComment
 
 
 class AlbumCommentSerializer(serializers.ModelSerializer):
+    content = CharField(required=True, min_length=3)
+
     class Meta:
         model = AlbumComment
         fields = ['id', 'album', 'author', 'create_date', 'content']

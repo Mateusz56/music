@@ -10,6 +10,7 @@ from song_comment.models import SongComment
 from rest_framework import permissions
 import json
 
+
 class SongCommentList(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -28,6 +29,9 @@ class SongCommentList(APIView):
     def post(self, request, format=None):
         body = json.loads(request.body)
         author = Token.objects.get(key=body['token']).user_id
+        if len(body['content']) < 3:
+            return Response(data={'content': ['Komentarz musi zawierać co najmniej 3 znaki.']},
+                            status=status.HTTP_400_BAD_REQUEST)
         song_comment = SongComment(author_id=author, song_id=body['song'], content=body['content'])
         song_comment.save()
         return Response(model_to_dict(song_comment), status=status.HTTP_201_CREATED)

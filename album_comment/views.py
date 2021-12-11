@@ -30,6 +30,9 @@ class AlbumCommentList(APIView):
     def post(self, request, format=None):
         body = json.loads(request.body)
         author = request.user.id
+        if len(body['content']) < 3:
+            return Response(data={'content': ['Komentarz musi zawierać co najmniej 3 znaki.']},
+                            status=status.HTTP_400_BAD_REQUEST)
         album_comment = AlbumComment(author_id=author, album_id=body['album'], content=body['content'])
         album_comment.save()
         return Response(model_to_dict(album_comment), status=status.HTTP_201_CREATED)

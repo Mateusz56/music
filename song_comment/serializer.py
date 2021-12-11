@@ -1,8 +1,12 @@
 from rest_framework import serializers
+from rest_framework.fields import CharField
+
 from song_comment.models import SongComment
 
 
 class SongCommentSerializer(serializers.ModelSerializer):
+    content = CharField(required=True, min_length=3)
+
     class Meta:
         model = SongComment
         fields = ['id', 'song', 'author', 'create_date', 'content']
