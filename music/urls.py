@@ -31,4 +31,7 @@ urlpatterns = [
     path('', include('user.urls')),
     path('user/', UserPost.as_view()),
     path('user/<int:pk>/', UserDetail.as_view()),
+    path('', include('user_info.urls'))
 ]
+
+

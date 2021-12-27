@@ -16,7 +16,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['username', 'first_name', 'last_name', 'email', 'password']
 
     def create(self, validated_data):
-        print(validated_data)
         return get_user_model().objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):
@@ -50,3 +49,4 @@ class UpdateUserSerializer(UserSerializer):
     password = serializers.CharField(min_length=5, write_only=True, required=False)
     first_name = serializers.CharField(min_length=2, required=False, validators=[alphanumeric])
     last_name = serializers.CharField(min_length=2, required=False, validators=[alphanumeric])
+    email = serializers.EmailField(required=False)

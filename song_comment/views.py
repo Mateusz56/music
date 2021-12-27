@@ -30,7 +30,12 @@ class SongCommentList(APIView):
         body = json.loads(request.body)
         author = Token.objects.get(key=body['token']).user_id
         if len(body['content']) < 3:
-            return Response(data={'content': ['Komentarz musi zawierać co najmniej 3 znaki.']},
+            if 'Accept-Language' in request.headers:
+                error_code = ['Komentarz musi zawierać co najmniej 3 znaki.' if request.headers['Accept-Language'].split(',')[0] == 'pl' else 'Comment must be at least 3 characters long.']
+            else:
+                error_code = 'Comment must be at least 3 characters long.'
+
+            return Response(data={'content': [error_code]},
                             status=status.HTTP_400_BAD_REQUEST)
         song_comment = SongComment(author_id=author, song_id=body['song'], content=body['content'])
         song_comment.save()

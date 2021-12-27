@@ -28,10 +28,16 @@ class AlbumCommentList(APIView):
         return Response(album_comment.values())
 
     def post(self, request, format=None):
+        print(request.headers['Accept-Language'])
         body = json.loads(request.body)
         author = request.user.id
         if len(body['content']) < 3:
-            return Response(data={'content': ['Komentarz musi zawierać co najmniej 3 znaki.']},
+            if 'Accept-Language' in request.headers:
+                error_code = ['Komentarz musi zawierać co najmniej 3 znaki.' if request.headers['Accept-Language'].split(',')[0] == 'pl' else 'Comment must be at least 3 characters long.']
+            else:
+                error_code = 'Comment must be at least 3 characters long.'
+
+            return Response(data={'content': [error_code]},
                             status=status.HTTP_400_BAD_REQUEST)
         album_comment = AlbumComment(author_id=author, album_id=body['album'], content=body['content'])
         album_comment.save()

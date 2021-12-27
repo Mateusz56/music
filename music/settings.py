@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'album_mark',
     'favourite_song',
     'favourite_album',
-    'album_invitation'
+    'album_invitation',
+    'user_info',
 ]
 
 REST_FRAMEWORK = {
@@ -60,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 ]
 
 
@@ -105,14 +107,6 @@ DATABASES = {
     #    'HOST': 'maluch.mikr.us',
         'PORT': '40031',
     }
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'sql11448799',
-    #     'USER': 'sql11448799',
-    #     'PASSWORD': 'H9XP9sCEr8',
-    #     'HOST': 'sql11.freesqldatabase.com',
-    #     'PORT': '3306',
-    # }
 }
 
 
@@ -138,8 +132,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'pl'
-
+LANGUAGE_CODE = 'de'
+prefix_default_language = False
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
