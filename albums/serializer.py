@@ -13,15 +13,18 @@ class AlbumSerializer(serializers.ModelSerializer):
     remove_song = serializers.IntegerField(write_only=True, required=False)
     add_owner = serializers.IntegerField(write_only=True, required=False)
     remove_owner = serializers.IntegerField(write_only=True, required=False)
+    image_url = serializers.CharField(required=True)
+    artist = serializers.CharField(required=True)
     name = serializers.CharField(required=True, min_length=1)
 
     class Meta:
         model = Album
         fields = ['id', 'name', 'songs_count', 'comments_count', 'marks_avg', 'favourite', 'public', 'owners',
-                  'add_song', 'remove_song', 'add_owner', 'remove_owner']
+                  'add_song', 'remove_song', 'add_owner', 'remove_owner', 'image_url', 'artist']
 
     def create(self, validated_data):
-        album = Album(name=validated_data.get('name'), public=validated_data.get('public'))
+        album = Album(name=validated_data.get('name'), public=validated_data.get('public'),
+                      artist=validated_data.get('artist'), image_url=validated_data.get('image_url'))
         album.save()
         for owner in validated_data.get('owners'):
             album.owners.add(owner.id)

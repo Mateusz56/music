@@ -1,4 +1,4 @@
-from django.db.models import F, OuterRef, Value, Avg, Count
+from django.db.models import F, OuterRef, Value, Avg, Count, Q
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -37,7 +37,7 @@ class AlbumList(APIView):
             offset = 0
 
         if 'name' in request.query_params:
-            album = album.filter(name__contains=request.query_params.get('name'))
+            album = album.filter(Q(name__contains=request.query_params.get('name')) | Q(artist__contains=request.query_params.get('name')))
 
         if request.user.id is not None:
             user_id = request.user.id

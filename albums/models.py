@@ -5,6 +5,8 @@ from song.models import Song
 
 class Album(models.Model):
     name = models.CharField(max_length=120)
+    artist = models.CharField(max_length=50, null=True)
+    image_url = models.CharField(max_length=200, null=True)
     songs = models.ManyToManyField(Song, through='AlbumsSong')
     owners = models.ManyToManyField(get_user_model())
     public = models.BooleanField(default=True)

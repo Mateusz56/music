@@ -115,5 +115,5 @@ class GenresList(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, format=None):
-        data = Song.Genres.labels
+        data = Song.Genres.values
         return Response(data)
